@@ -7,6 +7,12 @@ const router = require('express').Router();
 
 router.use(isAuthenticated)
 
+router.get('/delete/:id', async (req, res) => {
+    const hotelId = req.params.id;
+    await Hotel.findByIdAndDelete(hotelId);
+
+    return res.redirect('/');
+})
 
 router.get('/book/:id', async (req, res) => {
     const hotelId = req.params.id;
@@ -27,14 +33,13 @@ router.get('/book/:id', async (req, res) => {
 router.post('/edit/:id', async (req, res) => {
     const hotelId = req.params.id;
     const hotelData = req.body;
-    console.log(hotelData);
 
     try {
         await editHotel(hotelId, hotelData);
         return res.redirect('/')
     } catch (error) {
-        let hotel = await Hotel.findById(hotelId)
-        let errorMessages = createErrorMessage(Object.keys(error.errors));
+        let hotel = await Hotel.findById(hotelId).lean();
+        let errorMessages = createErrorMessage(error);
         res.render('edit', {hotel, errorMessages})
     }
 })
@@ -66,10 +71,9 @@ router.post('/add', async (req, res) => {
 
     try {
         let hotel = await addHotel(hotelData);
-        console.log(hotel);
         return res.redirect('/')
     } catch (error) {
-        let errorMessages = createErrorMessage(Object.keys(error.errors));
+        let errorMessages = createErrorMessage(error);
         res.render('create', {errorMessages})
     }
 })

@@ -4,7 +4,7 @@ const { SECRET } = require('../constants');
 const { jwtSign } = require('../utils/jwtUtils');
 
 async function register(email, username, password, repeatPassword) {
-    if (!password === repeatPassword) {
+    if (password !== repeatPassword) {
         throw new Error('Passwords must match.');
     };
 
@@ -16,12 +16,16 @@ async function register(email, username, password, repeatPassword) {
 async function login(username, password) {
     let user = await User.findOne({username: username}).lean();
 
+    if (!user) {
+        throw new Error('Username or password incorrect.')
+    }
+
     let passwordCorrect = await bcrypt.compare(password, user.password);
 
     if (passwordCorrect) {
         return user;
     } else {
-        throw new Error('Email or password incorrect.')
+        throw new Error('Username or password incorrect.')
     }
 
 }

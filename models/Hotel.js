@@ -1,30 +1,30 @@
 const mongoose = require('mongoose');
 
-const hotelSchema = new mongoose.Schema({
+let hotelSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
         unique: true,
-        minlength: 4,
+        minlength: [4, 'Hotel name cannot be less than 4 characters.']
     },
 
     city: {
         type: String,
         required: true,
-        minlength: 3,
+        minlength: [3, 'City name cannot be less than 3 characters.']
     },
 
     image: {
         type: String,
         required: true,
-        validate: /^https?:\/\/.+$/
+        validate: [/^https?:\/\/.+$/, 'Your hotel image must be a valid link.']
     },
 
     freeRooms: {
         type: Number,
         required: true,
-        min: 0,
-        max: 100,
+        min: [0, 'Hotel cannot have less than 0 free rooms.'],
+        max: [100, 'Hotel cannot have more than 100 free rooms.'],
     },
 
     bookedUsers: [{
@@ -33,13 +33,14 @@ const hotelSchema = new mongoose.Schema({
     }],
 
     owner: {
-        type: String,
+        type: mongoose.Types.ObjectId,
         required: true,
+        ref: 'User',
     }
-}),
+})
 
+const Hotel = mongoose.model('Hotel', hotelSchema);
 
-Hotel = mongoose.model('Hotel', hotelSchema);
 
 
 module.exports = Hotel;

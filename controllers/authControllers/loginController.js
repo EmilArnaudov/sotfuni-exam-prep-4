@@ -29,8 +29,8 @@ router.post('/', async (req, res) => {
         return res.redirect('/');
         
     } catch (error) {
-        let errorMessage = error.message; 
-        return res.render('login', {errorMessages: [{errorMessage}]});
+        let errorMessages = createErrorMessage(error); 
+        return res.render('login', {errorMessages});
     }
 })
 
